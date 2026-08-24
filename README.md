@@ -2,6 +2,8 @@
 
 Document Vault is a high-performance GraphQL backend service built with Bun, TypeScript, GraphQL Yoga, and Prisma ORM for managing document collections, tagging, searching, and cursor-based pagination backed by PostgreSQL.
 
+All design decisions, tradeoffs, and how this could be extended are documented in DECISIONS.md — this README covers setup and usage only.
+
 ## Setup
 
 Ensure `.env` exists by copying the template file:
@@ -126,3 +128,4 @@ Commands:
 - **Sanity Script**: `"sanity": "bun run lint && bun run typecheck && bun test"` in `package.json` for one-step local and CI validation.
 - **Dockerfile**: Production container image build using `oven/bun:1`.
 - **GitHub Actions CI Workflow**: `.github/workflows/ci.yml` running PostgreSQL service containers, database migrations, linting, typechecking, and tests automatically on pull requests.
+
