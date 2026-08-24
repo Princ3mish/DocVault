@@ -1,3 +1,5 @@
+import { GraphQLError } from "graphql";
+import { validateTitle, validateContent } from "./validation";
 import type { PrismaClient, Document, Prisma } from "@prisma/client";
 
 export async function searchDocuments(
@@ -61,7 +63,27 @@ export async function createDocument(
     tags?: string[] | null;
   }
 ): Promise<Document> {
-  throw new Error("not implemented");
+  validateTitle(data.title);
+  validateContent(data.content);
+
+  const collection = await prisma.collection.findUnique({
+    where: { id: data.collectionId },
+  });
+
+  if (!collection) {
+    throw new GraphQLError("Collection not found", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+
+  return prisma.document.create({
+    data: {
+      title: data.title,
+      content: data.content,
+      collectionId: data.collectionId,
+      tags: data.tags ?? [],
+    },
+  });
 }
 
 export async function updateDocument(
@@ -74,14 +96,67 @@ export async function updateDocument(
     isArchived?: boolean | null;
   }
 ): Promise<Document> {
-  throw new Error("not implemented");
+  const existing = await prisma.document.findUnique({
+    where: { id },
+  });
+
+  if (!existing) {
+    throw new GraphQLError("Document not found", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+
+  if (data.title !== null && data.title !== undefined) {
+    validateTitle(data.title);
+  }
+
+  if (data.content !== null && data.content !== undefined) {
+    validateContent(data.content);
+  }
+
+  const updateData: Prisma.DocumentUpdateInput = {};
+
+  if (data.title !== null && data.title !== undefined) {
+    updateData.title = data.title;
+  }
+
+  if (data.content !== null && data.content !== undefined) {
+    updateData.content = data.content;
+  }
+
+  if (data.tags !== null && data.tags !== undefined) {
+    updateData.tags = data.tags;
+  }
+
+  if (data.isArchived !== null && data.isArchived !== undefined) {
+    updateData.isArchived = data.isArchived;
+  }
+
+  return prisma.document.update({
+    where: { id },
+    data: updateData,
+  });
 }
 
 export async function deleteDocument(
   prisma: PrismaClient,
   id: string
 ): Promise<boolean> {
-  throw new Error("not implemented");
+  const existing = await prisma.document.findUnique({
+    where: { id },
+  });
+
+  if (!existing) {
+    throw new GraphQLError("Document not found", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+
+  await prisma.document.delete({
+    where: { id },
+  });
+
+  return true;
 }
 
 export async function moveDocument(
@@ -89,5 +164,28 @@ export async function moveDocument(
   id: string,
   collectionId: string
 ): Promise<Document> {
-  throw new Error("not implemented");
+  const existingDoc = await prisma.document.findUnique({
+    where: { id },
+  });
+
+  if (!existingDoc) {
+    throw new GraphQLError("Document not found", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+
+  const targetCol = await prisma.collection.findUnique({
+    where: { id: collectionId },
+  });
+
+  if (!targetCol) {
+    throw new GraphQLError("Collection not found", {
+      extensions: { code: "BAD_USER_INPUT" },
+    });
+  }
+
+  return prisma.document.update({
+    where: { id },
+    data: { collectionId },
+  });
 }
