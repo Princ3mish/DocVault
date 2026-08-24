@@ -15,7 +15,7 @@ describe("collections data access functions", () => {
         collection: { create: mockCollectionCreate },
       } as unknown as PrismaClient;
 
-      expect(
+      await expect(
         createCollection(mockPrisma, { name: "   ", slug: "valid-slug" })
       ).rejects.toThrow("Name cannot be empty");
 
@@ -28,7 +28,7 @@ describe("collections data access functions", () => {
         collection: { create: mockCollectionCreate },
       } as unknown as PrismaClient;
 
-      expect(
+      await expect(
         createCollection(mockPrisma, { name: "Valid Name", slug: "Invalid Slug" })
       ).rejects.toThrow();
 

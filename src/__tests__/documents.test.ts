@@ -86,7 +86,7 @@ describe("searchDocuments data access function", () => {
         document: { create: mockDocumentCreate },
       } as unknown as PrismaClient;
 
-      expect(
+      await expect(
         createDocument(mockPrisma, {
           title: "   ",
           content: "Content",
@@ -106,7 +106,7 @@ describe("searchDocuments data access function", () => {
         document: { create: mockDocumentCreate },
       } as unknown as PrismaClient;
 
-      expect(
+      await expect(
         createDocument(mockPrisma, {
           title: "Valid Title",
           content: "Valid content",
@@ -156,7 +156,7 @@ describe("searchDocuments data access function", () => {
         },
       } as unknown as PrismaClient;
 
-      expect(
+      await expect(
         updateDocument(mockPrisma, "doc-999", { isArchived: true })
       ).rejects.toThrow("Document not found");
 
@@ -196,7 +196,7 @@ describe("searchDocuments data access function", () => {
         },
       } as unknown as PrismaClient;
 
-      expect(deleteDocument(mockPrisma, "doc-999")).rejects.toThrow(
+      await expect(deleteDocument(mockPrisma, "doc-999")).rejects.toThrow(
         "Document not found"
       );
 
@@ -238,7 +238,7 @@ describe("searchDocuments data access function", () => {
         collection: { findUnique: mockCollectionFindUnique },
       } as unknown as PrismaClient;
 
-      expect(moveDocument(mockPrisma, "doc-999", "col-2")).rejects.toThrow(
+      await expect(moveDocument(mockPrisma, "doc-999", "col-2")).rejects.toThrow(
         "Document not found"
       );
 
@@ -258,7 +258,7 @@ describe("searchDocuments data access function", () => {
         collection: { findUnique: mockCollectionFindUnique },
       } as unknown as PrismaClient;
 
-      expect(moveDocument(mockPrisma, "doc-1", "col-999")).rejects.toThrow(
+      await expect(moveDocument(mockPrisma, "doc-1", "col-999")).rejects.toThrow(
         "Collection not found"
       );
 
