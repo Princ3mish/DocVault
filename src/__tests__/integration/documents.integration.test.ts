@@ -16,7 +16,7 @@ describe("Document Vault integration", () => {
   beforeAll(async () => {
     try {
       await prisma.$queryRaw`SELECT 1`;
-    } catch (error) {
+    } catch {
       throw new Error(
         "PostgreSQL container is not reachable. Please start Docker Postgres with 'docker compose up -d'."
       );
